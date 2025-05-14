@@ -1,44 +1,56 @@
-const registerEmployeesController = {};
-import employee from "../models/employee.js";
-import bcryptjs from "bcryptjs"
-import jsonwebtoken from "jsonwebtoken"
-import { config } from "../config.js";
+// Se define un objeto vacío para almacenar las funciones del controlador de registro de empleados
+const registerEmployeeController = {}; 
 
+// Se importa el modelo de empleados desde la carpeta "models"
+import employeeModel from "../models/employee.js"; // Corrección: "employee" → "employeeModel"
 
+// Se importan los módulos necesarios para el cifrado y autenticación
+import bcryptjs from "bcryptjs"; // Para encriptar contraseñas
+import jsonwebtoken from "jsonwebtoken"; // Para generar tokens JWT
+import { config } from "../config.js"; // Archivo de configuración con claves secretas
+
+// Función para registrar un nuevo empleado
 registerEmployeeController.register = async (req, res) => {
-  const { name, email, password, telephone,  address,  hireDate, salary, status} = req.body;
-  try{
+  // Se extraen los datos enviados en el cuerpo de la solicitud (req.body)
+  const { name, email, password, telephone, address, hireDate, salary, status } = req.body;
 
-    //Verifica si existe el empleado
-    const existEmployee = await Employee.findOne({email})
-    if(existEmployee){
-        return res.json({ message: "employee already exist" });
+  try {
+    // Verificar si el empleado ya existe en la base de datos
+    const existEmployee = await employeeModel.findOne({ email }); // Corrección: "Employee" → "employeeModel"
+    if (existEmployee) {
+        return res.json({ message: "Employee already exists" });
     }
 
+    // Encriptar la contraseña antes de guardarla
     const passwordHash = await bcryptjs.hash(password, 10);
 
-    const newEmployee = new Employee({name, email, password: passwordHash, telephone,  address,  hireDate, salary, status});
+    // Crear un nuevo empleado con los datos proporcionados
+    const newEmployee = new employeeModel({ name, email, password: passwordHash, telephone, address, hireDate, salary, status }); // Corrección: "Employee" → "employeeModel"
     await newEmployee.save();
-    res.json({ message: "employee saved" });
 
+    // Enviar confirmación de registro exitoso
+    res.json({ message: "Employee saved" });
+
+    // Generar un token JWT para autenticación del nuevo empleado
     jsonwebtoken.sign(
-        //1- que voy a guardar
-        {id: newEmployee._id},
-        //2- clave secreta
-        config.JWT.secret,
-        //3- cuando expira
-        {expiresIn: config.JWT.expiresIn},
-        //4- funcion flecha
-        (error, token) => {
-            if(error) console.log (error);
-            res.cookie("authToken", token);
+        { id: newEmployee._id }, // Datos a almacenar en el token
+        config.JWT.secret, // Clave secreta
+        { expiresIn: config.JWT.expiresIn }, // Expiración del token
+        (error, token) => { // Función de callback
+            if (error) {
+                console.log(error);
+            } else {
+                res.cookie("authToken", token); // Guardar el token en una cookie
+            }
         }
     );
-  }
-  catch (error) {
-     console.log(error);
-     res.json({ message: "error register employee" });
+
+  } catch (error) {
+    // Manejo de errores
+    console.log("Error: " + error);
+    res.json({ message: "Error registering employee" });
   }
 };
 
+// Exportar el controlador de registro de empleados
 export default registerEmployeeController;
