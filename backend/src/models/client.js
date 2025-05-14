@@ -1,33 +1,39 @@
 import { Schema, model } from "mongoose";
 
-const mongoose = require('mongoose');
-
-const clientSchema = new mongoose.Schema({
-    nombre: 
-    { 
-        type: String, required: true 
+const clientSchema = new Schema(
+  {
+    name: {
+      type: String,
+      require: true,
+      maxLength: 100,
     },
-    
-    correo: 
-    { 
-        type: String, required: true, unique: true 
+    email: {
+        type: String,
+        require: true,
+        maxLength: 100,
     },
-
-    telefono: 
-    { 
-        type: String 
+    password: {
+        type: String,
+        require: true,
+        maxLength: 100,
     },
-
-    direccion: 
-    { 
-        type: String 
+    telephone: {
+        type: String,
+        require: true,
     },
+    address: {
+        type: String,
+        require: true,
+    },
+    status:{
+        type: Boolean,
+        require: true,
+    },
+  },
+  {
+    timestamps: true,
+    strict: false,
+  }
+);
 
-    activo: 
-    { 
-        type: Boolean, default: true 
-
-    }
-});
-
-export default model("branches", branchesSchema);
+export default model("client", clientSchema);

@@ -1,41 +1,33 @@
 import { Schema, model } from "mongoose";
 
-const employeeSchema = new Schema(
+const movieSchema = new Schema(
   {
-    name: {
+    title: {
       type: String,
       require: true,
     },
-    email: {
+    description: {
         type: String,
         require: true,
     },
-    password: {
+    director: {
         type: String,
         require: true,
     },
-    telephone: {
+    gender: {
         type: String,
         require: true,
     },
-    address: {
+    year: {
+        type: Number,
+        require: true,
+    },
+    duration:{
         type: String,
         require: true,
     },
-    chargue:{
+    image:{
         type: String,
-        require: true,
-    },
-    hireDate:{
-        type: Date,
-        require: true,
-    },
-    salary:{
-        type: String,
-        require: true,
-    },
-    status:{
-        type: Boolean,
         require: true,
     },
   },
@@ -45,4 +37,4 @@ const employeeSchema = new Schema(
   }
 );
 
-export default model("employee", employeeSchema);
+export default model("movie", movieSchema);
